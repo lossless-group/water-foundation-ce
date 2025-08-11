@@ -23,9 +23,23 @@ slug: content-component-list
 ### Header
 - Jumbotron Popover
 
+## Narrative Pages
+
+
+
+### Mission Page
+ - Theme List
+ - Theme List Item
+### Metric Card
+- metricValueTxt
+- StyleProps
+- explainerTxt.
+
+
 ### Hero
 - GIF Carousel 
 - TextComponent
+- CaseByCaseFlipper
 
 ### Events
 - EventsGalleryWrapper
@@ -57,6 +71,12 @@ ProjectGalleryWrapper
 	- InteractionsMenu
 	- ProjectPage
 
+## Research
+
+### Thesis
+
+### Water Facts
+
 ### Cases
 CaseGalleryWrapper
 - InteractionsMenu
@@ -66,9 +86,28 @@ CaseGalleryWrapper
 	- InteractionsMenu
 	- CasePage
 
+## Hope Spots
 Reports
 
-Audiences
+# Audiences and Relationships Matrix
+
+
+|              | Relationship | Client | Donor | Investor | Partner | Member   | Investee | Donee |
+| ------------ | ------------ | ------ | ----- | -------- | ------- | -------- | -------- | ----- |
+| Audiences    |              |        |       |          |         |          |          |       |
+| Government   |              |        |       |          |         |          |          |       |
+| Corporate    |              |        |       |          |         |          |          |       |
+| Philanthropy |              |        |       |          |         |          |          |       |
+| UHNWI        |              |        |       |          |         | Artisens |          |       |
+
+
+## Policy
+## Donors
+
+## Investors
+
+## Partners
+
 
 ### Portfolios
 PortfolioGalleryWrapper
@@ -81,17 +120,10 @@ PortfolioGalleryWrapper
 
 
 
+
 Person Card
 
 Text Highlighter 
 
 Press Releases
 
- Mission Page
- - Theme List
- - Theme List Item
-
-Metric Card
-- metricValueTxt
-- StyleProps
-- explainerTxt.
