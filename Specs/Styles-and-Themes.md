@@ -253,3 +253,143 @@ export function generateThemeVars(theme: Theme, mode: 'light' | 'dark' = 'light'
   return cssVars;
 }
 ```
+
+# Implementation Status (August 2025)
+
+## Actual Implementation Details
+
+### What Was Built
+
+The theme system was successfully implemented in `/home/mps/code/lossless-monorepo/astro-knots/twf-site/` with the following architecture:
+
+#### File Structure (As Implemented)
+```bash
+src/
+  styles/
+    global.css           # Main CSS with Tailwind imports and dark mode overrides
+    water-theme.css      # CSS custom properties for both themes
+  utils/
+    theme-switcher.js    # Theme toggle utility (default ↔ water)
+    mode-switcher.js     # Mode toggle utility (light ↔ dark)
+  pages/
+    index.astro          # Demo page with toggle buttons
+```
+
+#### Theme System Architecture
+
+**Two-Layer System:**
+1. **Theme Layer**: `default` vs `water` (controlled by `data-theme="water"` attribute)
+2. **Mode Layer**: `light` vs `dark` (controlled by `data-mode="dark"` attribute)
+
+#### CSS Custom Properties Implementation
+
+**water-theme.css** defines CSS custom properties for both themes:
+- `:root` - Default theme colors (Tailwind defaults)
+- `[data-theme="water"]` - Water theme colors (inverted/ocean blues)
+
+**global.css** handles:
+- Tailwind CSS imports
+- Dark mode overrides using `[data-mode="dark"]` selectors
+- CSS specificity fixes with `!important` declarations
+
+#### JavaScript Utilities
+
+**ThemeSwitcher Class:**
+- Toggles between `default` and `water` themes
+- Uses `data-theme` attribute on `<html>`
+- Persists preference in localStorage
+- Provides methods: `toggleTheme()`, `setTheme()`, `getCurrentTheme()`
+
+**ModeSwitcher Class:**
+- Toggles between `light` and `dark` modes
+- Uses `data-mode` attribute on `<html>`
+- Persists preference in localStorage
+- Provides methods: `toggleMode()`, `setMode()`, `getCurrentMode()`
+
+#### Integration with Astro
+
+**CSS Import:**
+```javascript
+// In .astro frontmatter
+import '../styles/global.css';
+```
+
+**JavaScript Integration:**
+```javascript
+import { themeSwitcher } from '../utils/theme-switcher.js';
+import { modeSwitcher } from '../utils/mode-switcher.js';
+```
+
+### Key Implementation Challenges & Solutions
+
+#### 1. CSS Specificity Issues
+**Problem:** Tailwind utility classes weren't being overridden by dark mode styles.
+**Solution:** Used `!important` declarations and specific selectors like `[data-mode="dark"] .bg-primary-500`.
+
+#### 2. CSS Loading Order
+**Problem:** CSS wasn't loading in Astro pages.
+**Solution:** Explicit CSS import in Astro frontmatter: `import '../styles/global.css';`
+
+#### 3. Button Visibility in Dark Mode
+**Problem:** Dark mode CSS was making button text invisible.
+**Solution:** Proper contrast handling with `[data-mode="dark"] .text-white` overrides.
+
+### Testing Implementation
+
+**Comprehensive Test Suite:**
+- **33 passing tests** covering all functionality
+- **Unit tests** for both ThemeSwitcher and ModeSwitcher classes
+- **Integration tests** with JSDOM for DOM interactions
+- **Vitest configuration** with proper setup files
+
+**Test Files:**
+- `src/utils/__tests__/theme-switcher.test.js`
+- `src/utils/__tests__/mode-switcher.test.js`
+- `src/utils/__tests__/toggle-integration.test.js`
+- `vitest.config.js`
+
+### Working Combinations
+
+The system provides **4 distinct visual states:**
+1. **Default + Light** - Standard Tailwind colors, light backgrounds
+2. **Default + Dark** - Standard colors with dark backgrounds/light text
+3. **Water + Light** - Ocean blue theme, light backgrounds
+4. **Water + Dark** - Ocean blue theme with dark backgrounds/light text
+
+### Usage Example
+
+```html
+<!-- Toggle buttons -->
+<button id="theme-toggle">Toggle to Water Theme</button>
+<button id="mode-toggle">Toggle to Dark Mode</button>
+
+<script>
+import { themeSwitcher } from '../utils/theme-switcher.js';
+import { modeSwitcher } from '../utils/mode-switcher.js';
+
+// Theme toggle
+document.getElementById('theme-toggle').addEventListener('click', () => {
+  themeSwitcher.toggleTheme();
+});
+
+// Mode toggle  
+document.getElementById('mode-toggle').addEventListener('click', () => {
+  modeSwitcher.toggleMode();
+});
+</script>
+```
+
+### Lessons Learned
+
+1. **CSS Import Order Matters:** In Astro, CSS must be explicitly imported in frontmatter
+2. **Specificity is Critical:** Dark mode overrides need `!important` to override Tailwind utilities
+3. **Two-Layer Architecture Works:** Separating theme (colors) from mode (light/dark) provides flexibility
+4. **localStorage Integration:** Persisting preferences enhances user experience
+5. **Comprehensive Testing:** Both unit and integration tests are essential for theme systems
+
+### Future Enhancements
+
+- **System Preference Detection:** Auto-detect user's OS dark/light preference
+- **Smooth Transitions:** Add CSS transitions between theme/mode changes
+- **More Themes:** Extend beyond default/water to support multiple clients
+- **Component-Level Theming:** Theme-aware component variants

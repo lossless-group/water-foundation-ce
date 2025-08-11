@@ -5,7 +5,6 @@ lede: "A phased approach to building a scalable, multi-client water foundation p
 status: Draft
 category: Planning
 authors:
-  - AI Assistant
   - Michael Staton
 ---
 
@@ -15,57 +14,82 @@ authors:
 
 This document outlines a systematic approach to implementing the Water Foundation website, prioritizing reusable components, scalable architecture, and multi-client theming capabilities.
 
-## Tech Stack Recommendations
+## Tech Stack
 
 ### Core Framework
-- **Next.js 14+** with App Router for SSR/SSG capabilities
-- **TypeScript** for type safety across components
-- **Tailwind CSS** with custom design tokens
-- **Contentful/Sanity** for headless CMS (water facts, cases, events)
+- **Astro** for static site generation with islands architecture  
+- **Tailwind CSS** with custom design tokens and theme modifications
+- **Vanilla JavaScript** for interactivity (no React/JSX/TSX)
+- **Astro components** (.astro files) for templating
+- **Embedded CMS for easy Content Editing**
 
 ### Supporting Libraries
-- **Framer Motion** for animations (CaseByCaseFlipper, carousels)
-- **React Query/SWR** for data fetching and caching
-- **date-fns** for calendar/scheduling functionality
-- **MDX** for rich content rendering
+- **CSS custom properties** for dynamic theming with Tailwind
+- **Native JavaScript** for all interactions
+- **Web Components** for complex interactive elements when needed
+- **Vitest** for unit and integration testing
+- **Playwright** for E2E testing
 
 ## Step 1: Foundation
 
 ### 1.1 Project Setup
+- [x] Create Astro project
+- [ ] Install dependencies
 ```bash
-npx create-next-app@latest water-foundation --typescript --tailwind --app
+pnpm create astro@latest water-foundation
 cd water-foundation
-npm install framer-motion date-fns @tanstack/react-query
+# Choose "Empty" template, include Tailwind
+pnpm install
+
+# Install testing dependencies
+pnpm add -D vitest @vitest/ui happy-dom @testing-library/dom
+pnpm add tailwindcss@latest
 ```
 
 ### 1.2 Design System Implementation
 
 #### Tasks:
 1. **Configure Tailwind with custom theme**
-   - Set up `/styles/themes/` directory structure
-   - Implement `defaultTheme` and `client1Theme` configurations
-   - Create theme provider component with context
+   - Create `water-theme.css` file with appropriate variable names and stand in values
+   - Set up CSS custom properties in `/src/styles/global.css`
+   - Modify `tailwind.config.mjs` with custom design tokens
+   - Create theme switcher using data attributes
+   - Implement `defaultTheme` and `client1Theme` CSS files
 
 2. **Build Text Component System**
-   ```typescript
-   /components/base/
-     - Text.tsx (with role-based sizing)
-     - Heading.tsx
-     - Paragraph.tsx
+   ```
+   /src/components/base/
+     - DisplayText.astro
+      - ContextSetter.astro
+      - IconHeaderInline.astro
+      - IconHeaderStacked.astro
+      - Heading.astro
+      - Subheading.astro
+      - Paragraph.astro
+      - Link.astro
+      - List.astro
+      - UnorderedList.astro
+      - OrderedList.astro
+      - Quote.astro
+      - Citation.astro
+      - CitationList.astro
+      - MetricValue.astro
+      - MetricExplainer.astro
    ```
 
 3. **Establish Base Components**
-   ```typescript
-   /components/base/
-     - Card.tsx
-     - Button.tsx
-     - Container.tsx
+   ```
+   /src/components/base/
+     - Card.astro
+     - Button.astro
+     - Container.astro
    ```
 
 ### 1.3 Validation Checkpoints
-- [ ] Theme switching works (light/dark)
+- [ ] Theme switching works (light/dark) via data attributes
 - [ ] Text scales properly across breakpoints
-- [ ] TypeScript types are properly defined
+- [ ] Tailwind classes integrate with CSS custom properties
+- [ ] Vitest runs successfully with example test
 
 ## Step 2: Core Patterns
 
@@ -73,13 +97,13 @@ npm install framer-motion date-fns @tanstack/react-query
 
 Create reusable gallery system:
 
-```typescript
-/components/patterns/
+```
+/src/components/patterns/
   - Gallery/
-    - GalleryWrapper.tsx
-    - GalleryGrid.tsx
-    - GalleryCard.tsx
-    - InteractionsMenu.tsx
+    - GalleryWrapper.astro
+    - GalleryGrid.astro
+    - GalleryCard.astro
+    - InteractionsMenu.astro
 ```
 
 **Implementation Order:**
@@ -96,22 +120,23 @@ Create reusable gallery system:
 
 ### 2.2 Carousel Pattern
 
-```typescript
-/components/patterns/
+```
+/src/components/patterns/
   - Carousel/
-    - CarouselBase.tsx
-    - CarouselControls.tsx
-    - CarouselIndicators.tsx
+    - CarouselBase.astro
+    - CarouselControls.astro
+    - CarouselIndicators.astro
+    - carousel.js (vanilla JS for interactions)
 ```
 
 ### 2.3 List Pattern
 
-```typescript
-/components/patterns/
+```
+/src/components/patterns/
   - List/
-    - ListContainer.tsx
-    - ListItem.tsx
-    - UpcomingSection.tsx
+    - ListContainer.astro
+    - ListItem.astro
+    - UpcomingSection.astro
 ```
 
 ## Step 3: Domain Components
@@ -120,63 +145,96 @@ Create reusable gallery system:
 
 Build domain-specific cards:
 
-```typescript
-/components/domain/
+```
+/src/components/domain/
   - events/
-    - EventCard.tsx
-    - EventListItem.tsx
-    - UpcomingEventsSection.tsx
+    - EventCard.astro
+    - EventListItem.astro
+    - UpcomingEventsSection.astro
   - projects/
-    - ProjectCard.tsx
-    - ProjectPage.tsx
+    - ProjectCard.astro
+    - ProjectPage.astro
   - cases/
-    - CaseCard.tsx
-    - CasePage.tsx
+    - CaseCard.astro
+    - CasePage.astro
   - metrics/
-    - MetricCard.tsx
+    - MetricCard.astro
 ```
 
 ### 3.2 Hero Components
 
-```typescript
-/components/domain/hero/
-  - HeroSection.tsx
-  - GifCarousel.tsx
-  - CaseByCaseFlipper.tsx (with Framer Motion)
+```
+/src/components/domain/hero/
+  - HeroSection.astro
+  - GifCarousel.astro
+  - CaseByCaseFlipper.astro
+  - flipper.js (vanilla JS animations)
 ```
 
 ### 3.3 Data Models & API
 
-Define TypeScript interfaces:
+Define data structures:
 
-```typescript
-/types/
-  - event.ts
-  - project.ts
-  - case.ts
-  - portfolio.ts
-  - person.ts
+```
+/src/types/
+  - event.js
+  - project.js
+  - case.js
+  - portfolio.js
+  - person.js
 ```
 
 Set up API routes or CMS integration:
 
-```typescript
-/app/api/
-  - events/route.ts
-  - projects/route.ts
-  - cases/route.ts
+```
+/src/pages/api/
+  - events.js
+  - projects.js
+  - cases.js
+```
+
+### 3.4 Testing Domain Components
+
+Example test structure with Vitest:
+
+```javascript
+// src/tests/unit/MetricCard.test.js
+import { describe, it, expect } from 'vitest';
+import { render } from '@testing-library/dom';
+
+describe('MetricCard', () => {
+  it('displays metric value and explainer text', () => {
+    const metricData = {
+      value: '1.2M',
+      explainer: 'Gallons of water saved'
+    };
+    
+    // Test rendering logic
+    const element = document.createElement('div');
+    element.innerHTML = `
+      <div class="metric-card">
+        <span class="metric-value">${metricData.value}</span>
+        <span class="metric-explainer">${metricData.explainer}</span>
+      </div>
+    `;
+    
+    expect(element.querySelector('.metric-value').textContent).toBe('1.2M');
+    expect(element.querySelector('.metric-explainer').textContent).toBe('Gallons of water saved');
+  });
+});
 ```
 
 ## Step 4: Complex Features
 
 ### 4.1 Calendar & Booking System
 
-```typescript
-/components/domain/calendar/
-  - DiaryCalendar.tsx
-  - BusyFreeIndicator.tsx
-  - BookingModal.tsx
-  - ItineraryView.tsx
+```
+/src/components/domain/calendar/
+  - DiaryCalendar.astro
+  - BusyFreeIndicator.astro
+  - BookingModal.astro
+  - ItineraryView.astro
+  - calendar.js (vanilla JS for interactions)
 ```
 
 **Key Considerations:**
@@ -186,11 +244,11 @@ Set up API routes or CMS integration:
 
 ### 4.2 Relationship Matrix
 
-```typescript
-/components/domain/matrix/
-  - RelationshipMatrix.tsx
-  - MatrixCell.tsx
-  - AudienceRow.tsx
+```
+/src/components/domain/matrix/
+  - RelationshipMatrix.astro
+  - MatrixCell.astro
+  - AudienceRow.astro
 ```
 
 **Implementation Notes:**
@@ -200,45 +258,45 @@ Set up API routes or CMS integration:
 
 ### 4.3 Portfolio System
 
-```typescript
-/components/domain/portfolio/
-  - PortfolioGallery.tsx
-  - PortfolioEntity.tsx
-  - InvestorDashboard.tsx
+```
+/src/components/domain/portfolio/
+  - PortfolioGallery.astro
+  - PortfolioEntity.astro
+  - InvestorDashboard.astro
 ```
 
 ## Step 5: Page Assembly
 
 ### 5.1 Page Templates
 
-```typescript
-/app/
-  - page.tsx (Home with Hero)
-  - mission/page.tsx
-  - events/page.tsx
-  - projects/page.tsx
+```
+/src/pages/
+  - index.astro (Home with Hero)
+  - mission.astro
+  - events.astro
+  - projects.astro
   - research/
-    - cases/page.tsx
-    - water-facts/page.tsx
-  - portfolio/page.tsx
-  - team/page.tsx
+    - cases.astro
+    - water-facts.astro
+  - portfolio.astro
+  - team.astro
 ```
 
 ### 5.2 Navigation & Layout
 
-```typescript
-/components/layout/
-  - Header.tsx (with Jumbotron Popover)
-  - Navigation.tsx
-  - Footer.tsx
-  - Layout.tsx
+```
+/src/components/layout/
+  - Header.astro (with Jumbotron Popover)
+  - Navigation.astro
+  - Footer.astro
+  - Layout.astro
 ```
 
 ## Step 6: Enhancement & Optimization
 
 ### 6.1 Performance Optimization
 - Implement lazy loading for galleries
-- Add image optimization (next/image)
+- Add image optimization (Astro Image)
 - Set up incremental static regeneration
 - Implement proper caching strategies
 
@@ -259,16 +317,38 @@ Set up API routes or CMS integration:
 ### 7.1 Testing Strategy
 
 ```bash
-/tests/
-  - unit/          # Component tests
-  - integration/   # Feature tests
-  - e2e/          # User journey tests
+/src/tests/
+  - unit/          # Component tests with Vitest
+  - integration/   # API and feature tests with Vitest
+  - e2e/          # User journey tests with Playwright
+  - fixtures/     # Test data and mocks
+```
+
+**Vitest Configuration:**
+```javascript
+// vitest.config.js
+import { defineConfig } from 'vite';
+import { getViteConfig } from 'astro/config';
+
+export default defineConfig(
+  getViteConfig({
+    test: {
+      globals: true,
+      environment: 'happy-dom',
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'html'],
+      },
+    },
+  })
+);
 ```
 
 **Testing Checklist:**
-- [ ] Component unit tests with React Testing Library
-- [ ] Integration tests for API routes
-- [ ] E2E tests for critical user paths
+- [ ] Component unit tests with Vitest
+- [ ] Astro component tests using experimental test utilities
+- [ ] Integration tests for API routes with Vitest
+- [ ] E2E tests with Playwright for critical user paths
 - [ ] Visual regression testing
 - [ ] Performance testing (Lighthouse)
 - [ ] Accessibility testing (axe-core)
