@@ -126,10 +126,10 @@ interface TextComponentProps {
   
   /* Role-based sizes (relative to header) */
   --text-header: var(--text-xl);
-  --text-context: calc(var(--text-header) * 0.4);    /* 40% of header */
-  --text-subheader: calc(var(--text-header) * 0.6);  /* 60% of header */
-  --text-body: calc(var(--text-header) * 0.16);      /* 16% of header */
-  --text-caption: calc(var(--text-header) * 0.12);   /* 12% of header */
+  --text-context: calc(var(--text-header) * 0.75);    /* 75% of header */
+  --text-subheader: calc(var(--text-header) * 0.85);  /* 85% of header */
+  --text-body: calc(var(--text-header) * 0.5);       /* 50% of header */
+  --text-caption: calc(var(--text-header) * 0.4);     /* 40% of header */
 }
 
 /* Alignment classes */
@@ -145,13 +145,16 @@ interface TextComponentProps {
 .text-semibold { font-weight: 600; }
 .text-bold { font-weight: 700; }
 
-/* Line heights */
+/* Line heights - Extended scale */
 .leading-none { line-height: 1; }
-.leading-tight { line-height: 1.25; }
+.leading-snuggiest { line-height: 1.1; }
+.leading-snuggier { line-height: 1.2; }
 .leading-snug { line-height: 1.375; }
 .leading-normal { line-height: 1.5; }
 .leading-relaxed { line-height: 1.625; }
-.leading-loose { line-height: 2; }
+.leading-loose { line-height: 1.75; }
+.leading-looser { line-height: 1.875; }
+.leading-loosest { line-height: 2; }
 ```
 
 ```typescript
