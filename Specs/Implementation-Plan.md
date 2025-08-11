@@ -54,7 +54,7 @@ pnpm add tailwindcss@latest
    - Set up CSS custom properties in `/src/styles/global.css`
    - Modify `tailwind.config.mjs` with custom design tokens
    - Create theme switcher using data attributes
-   - Implement `defaultTheme` and `client1Theme` CSS files
+   - Implement `defaultTheme` and `waterFoundationTheme` CSS files
 
 2. **Build Text Component System**
    ```
