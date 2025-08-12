@@ -393,3 +393,142 @@ document.getElementById('mode-toggle').addEventListener('click', () => {
 - **Smooth Transitions:** Add CSS transitions between theme/mode changes
 - **More Themes:** Extend beyond default/water to support multiple clients
 - **Component-Level Theming:** Theme-aware component variants
+
+## Tailwind CSS v4 Migration (August 2025)
+
+### Critical Updates Made
+
+The theme system was successfully migrated from Tailwind CSS v3 to v4 with the following key changes:
+
+#### 1. Configuration Migration
+- **Removed**: `tailwind.config.js` (v3 JavaScript configuration)
+- **Added**: CSS-based configuration using `@theme` directive in `global.css`
+- **Updated**: Astro config to use `@tailwindcss/vite` plugin instead of `@astrojs/tailwind`
+
+#### 2. CSS Architecture Changes
+
+**Before (v3 style):**
+```css
+@layer theme {
+  :root {
+    --color-primary-50: 250 250 250; /* RGB space-separated */
+  }
+}
+```
+
+**After (v4 style):**
+```css
+@theme {
+  --color-primary-50: #fafafa; /* Hex format */
+  --color-primary-100: #f4f4f5;
+  /* ... complete color scale */
+}
+```
+
+#### 3. Theme Override Implementation
+
+**Water Theme Overrides:**
+```css
+.theme-water {
+  --color-primary-50: #ecfeff;
+  --color-primary-100: #cffafe;
+  --color-primary-200: #a5f3fc;
+  --color-primary-300: #67e8f9;
+  --color-primary-400: #22d3ee;
+  --color-primary-500: #06b6d4;
+  --color-primary-600: #0891b2;
+  --color-primary-700: #0e7490;
+  --color-primary-800: #155e75;
+  --color-primary-900: #164e63;
+  --color-primary-950: #083344;
+  /* ... secondary and accent colors */
+}
+```
+
+#### 4. TypeScript Support Added
+
+Created `src/types/tailwind.d.ts` for better IDE support:
+```typescript
+declare global {
+  namespace CSS {
+    interface AtRules {
+      theme: string;
+    }
+  }
+}
+
+export interface ThemeColors {
+  primary: { 50: string; 100: string; /* ... */ };
+  secondary: { 50: string; 100: string; /* ... */ };
+  accent: { 50: string; 100: string; /* ... */ };
+}
+```
+
+#### 5. Astro Configuration Update
+
+**Updated astro.config.mjs:**
+```javascript
+import { defineConfig } from 'astro/config';
+import tailwindcss from '@tailwindcss/vite';
+
+export default defineConfig({
+  vite: {
+    plugins: [tailwindcss()],
+  },
+});
+```
+
+### Current Status & Known Issues
+
+#### ✅ Working Features
+- Theme switching between default and water themes
+- Color variables properly defined in Tailwind v4 format
+- TypeScript support for better development experience
+- Astro integration with Vite plugin
+
+#### ⚠️ Known Issues (RESOLVED)
+- ~~**Default theme colors not displaying**: Colors work in water theme but show as white squares in default theme~~ **FIXED**
+- **CSS lint warnings**: IDE shows "Unknown at rule @theme" (expected, as CSS linters don't recognize Tailwind v4 directives)
+
+#### 🔧 Issue Resolution (August 12, 2025)
+
+**Problem Identified:**
+The default theme colors were not displaying properly due to a CSS variable format mismatch:
+- **Default theme** was using space-separated RGB values: `--color-primary-50: 250 250 250;`
+- **Water theme** was using hex values: `--color-primary-50: #ecfeff;`
+- This inconsistency caused the default theme colors to not render properly
+
+**Solution Applied:**
+Updated `/Users/mpstaton/code/lossless-monorepo/astro-knots/twf-site/src/styles/global.css` to use consistent hex format for all color variables:
+
+```css
+/* BEFORE - Space-separated RGB (not working) */
+.theme-default {
+  --color-primary-50: 250 250 250;
+  --color-primary-100: 244 244 245;
+  /* ... */
+}
+
+/* AFTER - Hex format (working) */
+.theme-default {
+  --color-primary-50: #fafafa;
+  --color-primary-100: #f4f4f5;
+  /* ... */
+}
+```
+
+**Root Cause:**
+The issue occurred during the Tailwind CSS v4 migration where different color formats were mixed. Tailwind v4 expects consistent color value formats across all theme definitions.
+
+**Verification:**
+- Theme toggle now works correctly between default and water themes
+- All color variables display properly in both themes
+- Console logs confirm theme switching functionality is working
+
+### Migration Lessons Learned
+
+1. **CSS-First Configuration**: Tailwind v4's move to CSS-based config requires different mental model
+2. **Hex vs RGB Format**: v4 prefers hex colors over space-separated RGB values
+3. **Plugin Changes**: Vite plugin integration differs significantly from v3
+4. **IDE Support**: Additional TypeScript definitions needed for proper linting
+5. **Theme Inheritance**: CSS custom property overrides work well for theme switching
